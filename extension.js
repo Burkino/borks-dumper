@@ -41,7 +41,7 @@ function activate(context) {
 			  })
 		})
 		.then(res => {
-			if(res.status !== 200 || res.status !== 201 || res.status !== 202 || res.status !== 203) {
+			if(res.status !== 200) {
 				throw new Error()
 			}
 			return res.text()
@@ -66,7 +66,7 @@ function activate(context) {
 			}
 		})
 		.catch(function() {
-			vscode.window.showErrorMessage('Something went wrong, the vps probably went dead')
+			vscode.window.showErrorMessage('Something went wrong, the vps probably went dead or maybe it just took too long')
 		})
 
 	});
