@@ -37,6 +37,10 @@ Node-fetch
 
 ## Release Notes
 
+### 0.0.5
+
+added analytics
+
 ### 0.0.4
 
 added line at very top of readme

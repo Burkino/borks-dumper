@@ -2,7 +2,7 @@
 	"name": "borks-dumper",
 	"displayName": "borks constant dumper",
 	"description": "constant dumps obfuscated scripts by using borks dumper",
-	"version": "0.0.4",
+	"version": "0.0.5",
 	"publisher": "Burkino",
 	"icon": "icon.png",
 	"repository": "https://github.com/Burkino/borks-dumper",

@@ -37,7 +37,8 @@ function activate(context) {
 			method: "post",
 			headers: {"Content-Type":"application/json"},
 			body: JSON.stringify({
-				code: vscode.window.activeTextEditor.document.getText()
+				code: vscode.window.activeTextEditor.document.getText(),
+				vscode: true
 			  })
 		})
 		.then(res => {
