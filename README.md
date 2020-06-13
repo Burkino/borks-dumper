@@ -1,6 +1,7 @@
 # borks-dumper README
 
 (hello)[ok]
+[hello](ok)
 
 [
                                                                                            
