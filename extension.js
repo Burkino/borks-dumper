@@ -41,7 +41,7 @@ function activate(context) {
 			  })
 		})
 		.then(res => {
-			if(res.status === 404) {
+			if(res.status !== 200 || res.status !== 201 || res.status !== 202 || res.status !== 203) {
 				throw new Error()
 			}
 			return res.text()
