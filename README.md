@@ -1,3 +1,5 @@
+If you find this plugin or github then 🤫
+
 # borks-dumper README
 
 ```
@@ -34,6 +36,10 @@ dumps obfuscated scripts ok?
 Node-fetch
 
 ## Release Notes
+
+### 0.0.4
+
+added line at very top of readme
 
 ### 0.0.3
 
