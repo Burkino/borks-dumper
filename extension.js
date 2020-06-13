@@ -25,12 +25,12 @@ function activate(context) {
 	// Now provide the implementation of the command with  registerCommand
 	// The commandId parameter must match the command field in package.json
 	let disposable = vscode.commands.registerCommand('borks-dumper.dump', function () {
-		vscode.window.showInformationMessage("Dumping started")
 		const settings = vscode.workspace.getConfiguration('borks-dumper')
 		if (!vscode.window.activeTextEditor || vscode.window.activeTextEditor.document.getText() == "") {
 			vscode.window.showErrorMessage("hey dummy you need to paste an obfuscated script for it to work")
 			return
 		}
+		vscode.window.showInformationMessage("Dumping started")
 		const fullRange = new vscode.Range(vscode.window.activeTextEditor.document.positionAt(0),vscode.window.activeTextEditor.document.positionAt(vscode.window.activeTextEditor.document.getText().length))
 
 		fetch('http://borks.club:3000/dumper', {
