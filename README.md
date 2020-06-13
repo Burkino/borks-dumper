@@ -26,8 +26,8 @@ https://v3rmillion.net/member.php?action=profile&uid=492604
 dumps obfuscated scripts ok?
 - [x] Aztup's ironbrew
 - [x] IronBrew 2
-- [ ] Luraph
-- [ ] More to come?
+- [x] Luraph
+- [ ] maybe other obfuscators that people use?
 
 ## Requirements
 
@@ -35,6 +35,10 @@ Node-fetch
 
 ## Release Notes
 
-### 1.0.0
+### 0.0.2
+
+changed supported obfuscators
+
+### 0.0.1
 
 Initial release, hopefully it works
