@@ -5,6 +5,7 @@
 	"version": "0.0.1",
 	"publisher": "Burkino",
 	"icon": "icon.png",
+	"repository": "",
 	"engines": {
 		"vscode": "^1.46.0"
 	},
@@ -12,13 +13,33 @@
 		"Other"
 	],
 	"activationEvents": [
-        "onCommand:borks-dumper.helloWorld"
+        "onCommand:borks-dumper.dump"
 	],
 	"main": "./extension.js",
 	"contributes": {
+		"configuration": {
+			"title": "Borks Constant Dumper",
+			"properties": {
+				"borks-dumper.OutputType": {
+					"type": "string",
+					"default": "Create new file",
+					"description": "Where to output dumped script",
+					"enum": [
+						"Replace current file",
+						"Create new file",
+						"Copy to clipboard"
+					],
+					"enumDescriptions": [
+						"Replaces entire document with dumped script",
+						"Creates new document with dumped script",
+						"Copies dumped script to the clipboard"
+					]
+				}
+			}
+		},
 		"commands": [{
-            "command": "borks-dumper.helloWorld",
-            "title": "Hello World"
+            "command": "borks-dumper.dump",
+            "title": "Bork's Constant Dumper: Dump script"
 
 		}]
 	},
