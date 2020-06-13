@@ -39,7 +39,7 @@ Node-fetch
 
 ### 0.0.5
 
-added analytics
+added extra header
 
 ### 0.0.4
 
