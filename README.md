@@ -1,6 +1,6 @@
 # borks-dumper README
 
-[
+(
                                                                                            
 bbbbbbbb                                                                                   
 b::::::b                                                                kkkkkkkk           
@@ -26,7 +26,7 @@ b::::::b                                                                k::::::k
                                                                                            
                                                                                            
                                                                                            
-](https://v3rmillion.net/member.php?action=profile&uid=492604)
+)[https://v3rmillion.net/member.php?action=profile&uid=492604]
 
 ## Features
 
