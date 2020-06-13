@@ -26,8 +26,8 @@ https://v3rmillion.net/member.php?action=profile&uid=492604
 dumps obfuscated scripts ok?
 - [x] Aztup's ironbrew
 - [x] IronBrew 2
-- [] Luraph
-- More to come?
+- [ ] Luraph
+- [ ] More to come?
 
 ## Requirements
 
