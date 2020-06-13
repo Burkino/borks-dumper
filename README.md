@@ -1,6 +1,6 @@
 # borks-dumper README
 
-(
+[
 bbbbbbbb                                                                                   
 b::::::b                                                                kkkkkkkk           
 b::::::b                                                                k::::::k           
@@ -18,7 +18,7 @@ b::::::b                                                                k::::::k
  b::::::::::::::::b      o:::::::::::::::o      r:::::r                 k::::::k  k:::::k  
  b:::::::::::::::b        oo:::::::::::oo       r:::::r                 k::::::k   k:::::k 
  bbbbbbbbbbbbbbbb           ooooooooooo         rrrrrrr                 kkkkkkkk    kkkkkkk
-)[https://v3rmillion.net/member.php?action=profile&uid=492604]
+](https://v3rmillion.net/member.php?action=profile&uid=492604)
 
 ## Features
 
