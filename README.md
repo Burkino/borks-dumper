@@ -35,6 +35,10 @@ Node-fetch
 
 ## Release Notes
 
+### 0.0.3
+
+made it check you were on a script before saying dumping started
+
 ### 0.0.2
 
 changed supported obfuscators
