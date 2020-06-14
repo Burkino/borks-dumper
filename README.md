@@ -1,5 +1,3 @@
-If you find this plugin or github then 🤫
-
 # borks-dumper README
 
 ```
@@ -31,32 +29,40 @@ dumps obfuscated scripts ok?
 - [x] Luraph
 - [ ] maybe other obfuscators that people use?
 
+- has a [minifier and beautifier](https://github.com/Herrtt/luamin.js/) from [herrtt](https://v3rmillion.net/member.php?action=profile&uid=599062)'s edit
+
 ## Requirements
 
 Node-fetch
 
 ## Release Notes
 
+### 0.0.7
+
+- added beautify/minify
+- cleaned code up a little, hopefully slightly more optimized since it will only load parts as theyre needed
+- removed line from top because this is public i guess
+
 ### 0.0.6
 
-changed port
+- changed port
 
 ### 0.0.5
 
-added extra header
+- added extra header
 
 ### 0.0.4
 
-added line at very top of readme
+- added line at very top of readme
 
 ### 0.0.3
 
-made it check you were on a script before saying dumping started
+- made it check you were on a script before saying dumping started
 
 ### 0.0.2
 
-changed supported obfuscators
+- changed supported obfuscators
 
 ### 0.0.1
 
-Initial release, hopefully it works
+- Initial release, hopefully it works

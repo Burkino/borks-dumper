@@ -9,6 +9,11 @@ dump.tooltip = "Dump script";
 dump.text = "$(server) Constant dump";
 
 
+let herrtts = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left);
+herrtts.command = "borks-dumper.luamin";
+herrtts.tooltip = "Beautifys and minifies a script";
+herrtts.text = "$(arrow-both) Luamin.js";
+
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 
@@ -20,19 +25,18 @@ function activate(context) {
 	// Use the console to output diagnostic information (console.log) and errors (console.error)
 	// This line of code will only be executed once when your extension is activated
 	dump.show()
+	herrtts.show()
 
 	// The command has been defined in the package.json file
 	// Now provide the implementation of the command with  registerCommand
 	// The commandId parameter must match the command field in package.json
 	let disposable = vscode.commands.registerCommand('borks-dumper.dump', function () {
-		const settings = vscode.workspace.getConfiguration('borks-dumper')
 		if (!vscode.window.activeTextEditor || vscode.window.activeTextEditor.document.getText() == "") {
 			vscode.window.showErrorMessage("hey dummy you need to paste an obfuscated script for it to work")
 			return
 		}
+		const settings = vscode.workspace.getConfiguration('borks-dumper')
 		vscode.window.showInformationMessage("Dumping started")
-		const fullRange = new vscode.Range(vscode.window.activeTextEditor.document.positionAt(0),vscode.window.activeTextEditor.document.positionAt(vscode.window.activeTextEditor.document.getText().length))
-
 		fetch('http://borks.club:2095/dumper', {
 			method: "post",
 			headers: {"Content-Type":"application/json"},
@@ -58,6 +62,7 @@ function activate(context) {
 				vscode.window.showInformationMessage("Dumped, new tab opened")
 
 			} else if (settings['OutputType'] == 'Replace current file') {
+				const fullRange = new vscode.Range(vscode.window.activeTextEditor.document.positionAt(0),vscode.window.activeTextEditor.document.positionAt(vscode.window.activeTextEditor.document.getText().length))
 				vscode.window.activeTextEditor.edit(editBuilder => {editBuilder.replace(fullRange, text)})
 				vscode.window.showInformationMessage("Dumped")
 
@@ -72,7 +77,64 @@ function activate(context) {
 
 	});
 
+	let luamin = vscode.commands.registerCommand('borks-dumper.luamin', function () {		
+		if (!vscode.window.activeTextEditor || vscode.window.activeTextEditor.document.getText() == "") {
+			vscode.window.showErrorMessage("hey dummy you need to have a script")
+			return
+		}
+
+		vscode.window.showQuickPick(["Beautify","Minify"],{canPickMany: false}).then(selection =>{
+			if(selection === undefined) {
+				return
+			}
+			const answer = selection.toLowerCase()
+			const settings = vscode.workspace.getConfiguration('borks-dumper')
+			
+			fetch('http://borks.club:2095/min', {
+			    method: "post",
+			    headers: {"Content-Type":"application/json"},
+			    body: JSON.stringify({
+			        code: vscode.window.activeTextEditor.document.getText(),
+			        type: answer
+			      })
+			})
+			.then(res => {
+			    if(res.status !== 200) {
+			        throw new Error()
+			    }
+			    return res.text()
+			})
+			.then(text => {
+
+				if (text.includes("<title>Error</title>")) {
+					vscode.workspace.showErrorMessage("Failed, your script probably has an error")
+					return
+				}
+
+			    if (settings['LuaminOutput'] == 'Create new file') {
+			        vscode.workspace.openTextDocument({"content":`${text}`,"language":"lua"})
+			        vscode.window.showInformationMessage("Luamin'd, new tab opened")
+				
+			    } else if (settings['LuaminOutput'] == 'Replace current file') {
+					const fullRange = new vscode.Range(vscode.window.activeTextEditor.document.positionAt(0),vscode.window.activeTextEditor.document.positionAt(vscode.window.activeTextEditor.document.getText().length))
+			        vscode.window.activeTextEditor.edit(editBuilder => {editBuilder.replace(fullRange, text)})
+			        vscode.window.showInformationMessage("Luamin'd")
+				
+			    } else if (settings['LuaminOutput'] == 'Copy to clipboard') {
+			        vscode.env.clipboard.writeText(text)
+			        vscode.window.showInformationMessage("Luamin'd, copied to clipboard")
+			    }
+			})
+			.catch(function() {
+			    vscode.window.showErrorMessage('Something went wrong, the vps probably went dead or maybe it just took too long')
+			})
+		})
+
+	});
+
 	context.subscriptions.push(disposable);
+	context.subscriptions.push(luamin);
+
 }
 exports.activate = activate;
 
