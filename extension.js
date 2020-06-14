@@ -33,7 +33,7 @@ function activate(context) {
 		vscode.window.showInformationMessage("Dumping started")
 		const fullRange = new vscode.Range(vscode.window.activeTextEditor.document.positionAt(0),vscode.window.activeTextEditor.document.positionAt(vscode.window.activeTextEditor.document.getText().length))
 
-		fetch('http://borks.club:3000/dumper', {
+		fetch('http://borks.club:2095/dumper', {
 			method: "post",
 			headers: {"Content-Type":"application/json"},
 			body: JSON.stringify({
