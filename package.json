@@ -56,6 +56,10 @@
 			{
 				"command": "borks-dumper.dump",
 				"title": "Bork's Constant Dumper: Dump script"
+			},
+			{
+				"command": "borks-dumper.dump",
+				"title": "Herrtt's Luamin to Minify and Beautify"
 			}
 		]
 	},
