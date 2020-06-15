@@ -37,6 +37,11 @@ Node-fetch
 
 ## Release Notes
 
+### 0.0.8
+
+- added options for luamin
+- should be faster and more stable since its local 
+
 ### 0.0.7
 
 - added beautify/minify

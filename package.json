@@ -2,7 +2,7 @@
 	"name": "borks-dumper",
 	"displayName": "borks constant dumper",
 	"description": "constant dumps obfuscated scripts by using borks dumper",
-	"version": "0.0.7",
+	"version": "0.0.8",
 	"publisher": "Burkino",
 	"icon": "icon.png",
 	"repository": "https://github.com/Burkino/borks-dumper",
@@ -58,7 +58,7 @@
 				"title": "Bork's Constant Dumper: Dump script"
 			},
 			{
-				"command": "borks-dumper.dump",
+				"command": "borks-dumper.luamin",
 				"title": "Herrtt's Luamin to Minify and Beautify"
 			}
 		]
