@@ -37,6 +37,12 @@ Node-fetch
 
 ## Release Notes
 
+### 0.0.9
+
+
+- updated luamin to herrtt's newer version
+
+
 ### 0.0.8
 
 - added options for luamin
