@@ -10,9 +10,14 @@
 // I tried to copy+paste all comments, but no. I got bored.
 // Be happy.
 
-const  CountTable = function(t) {
-    return t.length
+function shuffle(a) {
+    for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
 }
+
 const print = console.log
 const error = console.error
 const assert = function(a,b) {
@@ -21,18 +26,41 @@ const assert = function(a,b) {
     }
 }
 
-let WhiteChars = {
-    ' ':true, '\n':true, '\t':true, '\r':true,
+function parseFloat(str, radix) { // Thanks stackoverflow (hex numbers with decimal)
+    var parts = str.split(".");
+    if (parts.length > 1) {
+        return parseInt(parts[0], radix) + parseInt(parts[1], radix) / Math.pow(radix, parts[1].length);
+    }
+    return parseInt(parts[0], radix);
 }
 
-let EscapeForCharacter = {
+/** 
+ * 
+ * regex to make arr : (arr)\[(\S*)\]
+ * replace value : $1.includes($2)
+ * 
+*/
+
+
+
+
+let WhiteChars = [
+    ' ', 
+    '\n', 
+    '\t', 
+    '\r'
+]
+
+//unused
+
+/* let EscapeForCharacter = {
     '\r': '\\r', 
     '\n': '\\n',
     '\t': '\\t',
     '"': '\\"',
     "'": "\\'",
     '\\': '\\'
-}
+} */
 
 let Main_CharacterForEscape = {
     'r': '\r', 
@@ -44,94 +72,106 @@ let Main_CharacterForEscape = {
 }
 
 const CharacterForEscape = new Proxy(Main_CharacterForEscape, { 
-    get(a, b) { return parseInt(b) }
+    get(a, b) { return parseFloat(b) }
 })
 
-let AllIdentStartChars = {
-    'A':true,'B':true,'C':true,'D':true,
-    'E':true,'F':true,'G':true,'H':true,
-    'I':true,'J':true,'K':true,'L':true,
-    'M':true,'N':true,'O':true,'P':true,
-    'Q':true,'R':true,'S':true,'T':true,
-    'U':true,'V':true,'W':true,'X':true,
-    'Y':true,'Z':true,'_':true,'a':true,
-    'b':true,'c':true,'d':true,'e':true,
-    'f':true,'g':true,'h':true,'i':true,
-    'j':true,'k':true,'l':true,'m':true,
-    'n':true,'o':true,'p':true,'q':true,
-    'r':true,'s':true,'t':true,'u':true,
-    'v':true,'w':true,'x':true,'y':true,
-    'z':true,
-}
+let AllIdentStartChars = [
+    'A',    'B',    'C',    'D',
+    'E',    'F',    'G',    'H',
+    'I',    'J',    'K',    'L',
+    'M',    'N',    'O',    'P',
+    'Q',    'R',    'S',    'T',
+    'U',    'V',    'W',    'X',
+    'Y',    'Z',    '_',    'a',
+    'b',    'c',    'd',    'e',
+    'f',    'g',    'h',    'i',
+    'j',    'k',    'l',    'm',
+    'n',    'o',    'p',    'q',
+    'r',    's',    't',    'u',
+    'v',    'w',    'x',    'y',
+    'z'
+]
 
-let AllIdentChars = {
-    '0':true,'1':true,'2':true,'3':true,
-    '4':true,'5':true,'6':true,'7':true,
-    '8':true,'9':true,'A':true,'B':true,
-    'C':true,'D':true,'E':true,'F':true,
-    'G':true,'H':true,'I':true,'J':true,
-    'K':true,'L':true,'M':true,'N':true,
-    'O':true,'P':true,'Q':true,'R':true,
-    'S':true,'T':true,'U':true,'V':true,
-    'W':true,'X':true,'Y':true,'Z':true,
-    '_':true,'a':true,'b':true,'c':true,
-    'd':true,'e':true,'f':true,'g':true,
-    'h':true,'i':true,'j':true, 'k':true,
-    'l':true,'m':true,'n':true,'o':true,
-    'p':true,'q':true,'r':true,'s':true,
-    't':true,'u':true,'v':true,'w':true,
-    'x':true,'y':true,'z':true, // this was actually fucking retarded to add, pls dont do this to me
-}
+let AllIdentChars = [
+    '0',    '1',    '2',    '3',
+    '4',    '5',    '6',    '7',
+    '8',    '9',    
+    
+    
+    'A',    'B',
+    'C',    'D',    'E',    'F',
+    'G',    'H',    'I',    'J',
+    'K',    'L',    'M',    'N',
+    'O',    'P',    'Q',    'R',
+    'S',    'T',    'U',    'V',
+    'W',    'X',    'Y',    'Z',
+    '_',    'a',    'b',    'c',
+    'd',    'e',    'f',    'g',
+    't',    'u',    'v',    'w',
+    'h',    'i',    'j',    'k',
+    'l',    'm',    'n',    'o',
+    'p',    'q',    'r',    's',
+    'x',    'y',    'z',     // this was actually fucking retarded to add, pls dont do this to me
+]
 
-let Digits = {
-    '0':true,'1':true,'2':true,'3':true,
-    '4':true,'5':true,'6':true,'7':true,
-    '8':true,'9':true,
-}
+let Digits = [
+    '0','1','2','3',
+    '4','5','6','7',
+    '8','9',
+]
 
-let HexDigits = {
-    '0':true,'1':true,'2':true,'3':true,
-    '4':true,'5':true,'6':true,'7':true,
-    '8':true,'9':true,
+let HexDigits = [
+    //digits
+    '0','1','2','3',
+    '4','5','6','7',
+    '8','9',
 
-    'a':true,'b':true,'c':true,'d':true,'e':true,'f':true,
-    'A':true,'B':true,'C':true,'D':true,'E':true,'F':true,
-}
+    //letters
+    'a','b','c','d','e','f',
+    'A','B','C','D','E','F',
+]
 
-let Symbols = {
-    '+': true, '-': true, '*': true, '/': true, '^': true, '%': true, ',': true, '{': true, '}': true, '[': true, ']': true, '(': true, ')': true, ';': true, '#': true, '.': true, ':': true,
-}
+let Symbols = [
+    '+', '-', '*', ')', ';',  
+    '/', '^', '%', '#',
+    ',', '{', '}', ':',
+    '[', ']', '(','.',
+]
 
-let EqualSymbols = {
-    '~':true, '=':true, '>':true, '<':true,
-}
+let EqualSymbols = [
+    '~', '=', '>', '<',
+]
 
-let Keywords = {
-    'and':true,'break':true,'do':true,'else':true, 
-    'elseif':true,'end':true,'false':true,'for':true,
-    'function':true,'goto':true,'if':true,'in':true,
-    'local':true,'nil':true,'not':true,'or':true, 
-    'repeat':true,'return':true,'then':true,'true':true, 
-    'until':true, 'while':true,
-}
+let Keywords = [
+    'and',      'break',    'do',   'else', 
+    'elseif',   'end',      'false','for',
+    'function', 'goto',     'if',   'in',
+    'local',    'nil',      'not',  'or', 
+    'repeat',   'return',   'then', 'true', 
+    'until',    'while',
+]
 
-let BlockFollowKeyword = {
-    'else':true, 'elseif':true, 'until':true, 'end':true
-}
+let BlockFollowKeyword = [
+    'else',     'elseif', 
+    'until',    'end'
+]
 
-let UnopSet = {
-    '-':true, 'not':true, '#':true,
-}
+let UnopSet = [
+    '-',    'not',  '#',
+]
 
-let BinopSet = {
-	'+':true, '-':true, '*':true, '/':true, '%':true, '^':true, '#':true,
-	'..':true, '.':true, ':':true,
-	'>':true, '<':true, '<=':true, '>=':true, '~=':true, '==':true,
-	'and':true, 'or':true
-}
+let BinopSet = [
+    '+',    '-',     '*',   '/',    '%',    '^',    '#',    //algorithmic
+    
+    '..',   '.',     ':',   //dots / colons
+    
+    '>',    '<',     '<=',  '>=',   '~=',   '==',   //arrows / conditional
+    
+	'and',  'or'    // conditional 
+]
 
-let GlobalRenameIgnore = {
-}
+/* let GlobalRenameIgnore = {
+} //unused */
 let BinaryPriority = {
     '+': [6, 6],
     '-': [6, 6],
@@ -271,13 +311,14 @@ function CreateLuaTokenStream(text) {
     while (true) {
         // Mark the whitespace start
         whiteStart = p
-        while (true) { // remove comments
+        while (true) { // Whitespaces
             let c = look()
             if (c == '') {
                 break
             } else if(c == '-') {
+
                 if (look(1) == "-") {
-                    p = p + 2
+                    p += 2
 
                     // Consume comment body
                     if (look() == "[") {
@@ -293,7 +334,7 @@ function CreateLuaTokenStream(text) {
                             while (true) {
                                 let c2 = get()
                                 if (c2 == "" || c2 == "\n") {
-                                    whiteStart = p
+                                    //whiteStart = p
                                     break
                                 }
                             }
@@ -303,7 +344,7 @@ function CreateLuaTokenStream(text) {
                         while (true) {
                             let c2 = get()
                             if (c2 == "" || c2 == "\n") {
-                                whiteStart = p
+                                //whiteStart = p
                                 break
                             }
                         }
@@ -311,9 +352,8 @@ function CreateLuaTokenStream(text) {
                 } else {
                     break
                 }
-            } else if(WhiteChars[c]) {
+            } else if(WhiteChars.includes(c)) {
                 p++
-                //whiteStart = p // Idk I dont like white spaces
             } else {
                 break
             }
@@ -347,36 +387,36 @@ function CreateLuaTokenStream(text) {
                 }
             }
             token('String')
-        } else if(AllIdentStartChars[c1]) {
+        } else if(AllIdentStartChars.includes(c1)) {
             // Ident or keyword
-            while (AllIdentChars[look()]) {
+            while (AllIdentChars.includes(look())) {
                 p++
             }
 
-            if (Keywords[text.substr(tokenStart, (p - tokenStart))]) {
+            if (Keywords.includes(text.substr(tokenStart, (p - tokenStart)))) {
                 token("Keyword")
             } else {
                 token("Ident")
             }
             
-        } else if(Digits[c1] || (c1 == '.' && Digits[look()])) {
+        } else if(Digits.includes(c1) || (c1 == '.' && Digits.includes(look()))) {
             // Number
             if (c1 == '0' && look() == 'x') {
                 p++
                 // Hex number
-                while (HexDigits[look()]) {
+                while (HexDigits.includes(look())) {
                     p++
                 }
             } else {
                 // Normal number
-                while (Digits[look()]) {
+                while (Digits.includes(look())) {
                     p++
                 }
 
                 if (look() == '.') {
                     // With decimal point
                     p++
-                    while (Digits[look()]) {
+                    while (Digits.includes(look())) {
                         p++
                     }
                 }
@@ -387,7 +427,7 @@ function CreateLuaTokenStream(text) {
                     if (look() == '-') {
                         p++
                     }
-                    while (Digits[look()]) {
+                    while (Digits.includes(look())) {
                         p++
                     }
                 }
@@ -413,12 +453,12 @@ function CreateLuaTokenStream(text) {
                 }
             }
             token("Symbol")
-        } else if(EqualSymbols[c1]) {
+        } else if(EqualSymbols.includes(c1)) {
             if (look() == "=") {
                 p++
             }
             token("Symbol")
-        } else if(Symbols[c1]) {
+        } else if(Symbols.includes(c1)) {
             token("Symbol")
         } else {
             throw(`Bad symbol \`${c1}\` in source.`)
@@ -487,15 +527,15 @@ function CreateLuaParser(text) {
 
     function isBlockFollow() {
         let tok = peek()
-        return tok.Type == 'Eof' || (tok.Type == 'Keyword' && BlockFollowKeyword[tok.Source])   
+        return tok.Type == 'Eof' || (tok.Type == 'Keyword' && BlockFollowKeyword.includes(tok.Source))   
     }
 
     function isUnop() {
-        return UnopSet[peek().Source] || false
+        return UnopSet.includes(peek().Source) || false
     }
 
     function isBinop() {
-        return BinopSet[peek().Source] || false
+        return BinopSet.includes(peek().Source) || false
     }
 
     function expect(type, source) {
@@ -508,7 +548,6 @@ function CreateLuaParser(text) {
                 print(`Tokens[${i}] = \`${peek(i).Source}\``)
             }
             if (source) {
-
                 let a = `${getTokenStartPosition(tk)}: \`${source}\` expected.`
                 throw a
             } else {
@@ -541,21 +580,24 @@ function CreateLuaParser(text) {
     let block
     let expr
 
-    function exprlist() {
-        let exprList = [expr()]
+    function exprlist(locals) {
+        let exprList = [expr(locals)]
         let commaList = []
         while (peek().Source == ",") {
             commaList.push(get())
-            exprList.push(expr())
+            exprList.push(expr(locals))
         }
         return [exprList, commaList]
     }
 
-    function prefixexpr() {
+    function prefixexpr(locals) {
+        if (!locals) {
+            assert(false, "no locals")
+        }
         let tk = peek()
         if (tk.Source == '(') {
             let oparenTk = get()
-            let inner = expr()
+            let inner = expr(locals)
             let cparenTk = expect('Symbol', ')')
             let node
             node = MkNode({
@@ -575,15 +617,22 @@ function CreateLuaParser(text) {
                 'GetFirstToken': () => node.Token,
                 'GetLastToken': () => node.Token,
             })
+
+            if (locals[node.Token.Source]) {
+                locals[node.Token.Source].Tokens.push(node.Token)
+                locals[node.Token.Source].UseCountIncrease()
+            }
+
             return node
         } else {
             print(debugMark())
+
             let a = (`${getTokenStartPosition(tk)}: Unexpected symbol. ${tk.Type} ${tk.Source}`)
             throw a
         }
     }
 
-    function tableexpr() {
+    function tableexpr(locals) {
         let obrace = expect("Symbol", "{")
         let entries = []
         let seperators = []
@@ -591,10 +640,10 @@ function CreateLuaParser(text) {
             if (peek().Source == '[') {
                 // Index
                 let obrac = get()
-                let index = expr()
+                let index = expr(locals)
                 let cbrac = expect("Symbol", "]")
                 let eq = expect("Symbol", "=")
-                let value = expr()
+                let value = expr(locals)
 
                 entries.push({
                     "EntryType": "Index",
@@ -608,7 +657,7 @@ function CreateLuaParser(text) {
                 // Field
                 let field = get()
                 let eq = get()
-                let value = expr()
+                let value = expr(locals)
                 entries.push({
                     "EntryType": "Field",
                     "Field": field,
@@ -617,7 +666,7 @@ function CreateLuaParser(text) {
                 })
             } else {
                 // Value
-                let value = expr()
+                let value = expr(locals)
                 entries.push({
                     "EntryType": "Value",
                     "Value": value,
@@ -666,8 +715,8 @@ function CreateLuaParser(text) {
         return [varList, commaList]
     }
 
-    function blockbody(terminator) {
-        let body = block()
+    function blockbody(terminator, locals) {
+        let body = block(locals)
         let after = peek()
         if (after.Type == "Keyword" && after.Source == terminator) {
             get()
@@ -678,7 +727,7 @@ function CreateLuaParser(text) {
         }
     }
 
-    function funcdecl(isAnonymous) {
+    function funcdecl(isAnonymous, locals) {
         let functionKw = get()
 
         let nameChain
@@ -705,7 +754,7 @@ function CreateLuaParser(text) {
 
         let [argList, argCommaList, vargToken] = varlist(true)
         let cparenTk = expect("Symbol", ")")
-        let [fbody, enTk] = blockbody("end")
+        let [fbody, enTk] = blockbody("end", locals)
 
         let node
         node = MkNode({
@@ -727,14 +776,14 @@ function CreateLuaParser(text) {
         return node
     }
 
-    function functionargs() {
+    function functionargs(locals) {
         let tk = peek()
         if (tk.Source == "(") {
             let oparenTk = get()
             let argList = []
             let argCommaList = []
             while (peek().Source != ")") {
-                argList.push(expr())
+                argList.push(expr(locals))
                 if (peek().Source == ",") {
                     argCommaList.push(get())
                 } else {
@@ -759,7 +808,7 @@ function CreateLuaParser(text) {
             let node
             node = MkNode({
                 "CallType": "TableCall",
-                "TableExpr": expr(),
+                "TableExpr": expr(locals),
                 "GetFirstToken": () => node.TableExpr.GetFirstToken(),
                 "GetLastToken": () => node.TableExpr.GetLastToken(),
             })
@@ -779,8 +828,8 @@ function CreateLuaParser(text) {
     }
 
 
-    function primaryexpr() {
-        let base = prefixexpr()
+    function primaryexpr(locals) {
+        let base = prefixexpr(locals)
         assert(base, "nil prefixexpr")
 
         while (true) {
@@ -802,7 +851,7 @@ function CreateLuaParser(text) {
             } else if(tk.Source == ":") {
                 let colonTk = get()
                 let methodName = expect("Ident")
-                let fargs = functionargs()
+                let fargs = functionargs(locals)
                 let node
                 node = MkNode({
                     "Type": "MethodExpr",
@@ -816,7 +865,7 @@ function CreateLuaParser(text) {
                 base = node
             } else if(tk.Source == "[") {
                 let obrac = get()
-                let index = expr()
+                let index = expr(locals)
                 let cbrac = expect("Symbol", "]")
                 let node
                 node = MkNode({
@@ -834,7 +883,7 @@ function CreateLuaParser(text) {
                 node = MkNode({
                     "Type": "CallExpr",
                     "Base": base,
-                    "FunctionArguments": functionargs(),
+                    "FunctionArguments": functionargs(locals),
                     "GetFirstToken": () => node.Base.GetFirstToken(),
                     "GetLastToken": () => node.FunctionArguments.GetLastToken(),
                 })
@@ -845,7 +894,7 @@ function CreateLuaParser(text) {
         }
     }
 
-    function simpleexpr() {
+    function simpleexpr(locals) {
         let tk = peek()
         if (tk.Type == "Number") {
             let node
@@ -894,19 +943,19 @@ function CreateLuaParser(text) {
             })
             return node
         } else if(tk.Source == "{") {
-            return tableexpr()
+            return tableexpr(locals)
         } else if(tk.Source == "function") {
             return funcdecl(true)
         } else {
-            return primaryexpr()
+            return primaryexpr(locals)
         }
     }
 
-    function subexpr(limit) {
+    function subexpr(limit, locals) {
         let curNode
         if (isUnop()) {
             let opTk = get()
-            let ex = subexpr(UnaryPriority)
+            let ex = subexpr(UnaryPriority, locals)
             let node
             node = MkNode({
                 "Type": "UnopExpr",
@@ -917,13 +966,13 @@ function CreateLuaParser(text) {
             })
             curNode = node
         } else {
-            curNode = simpleexpr()
+            curNode = simpleexpr(locals)
             assert(curNode, "nil sipleexpr")
         }  
     
         while (isBinop() && BinaryPriority[peek().Source][0] > limit) {
             let opTk = get()
-            let rhs = subexpr(BinaryPriority[opTk.Source][1])
+            let rhs = subexpr(BinaryPriority[opTk.Source][1], locals)
             assert(rhs, "RhsNeeded")
             let node
             node = MkNode({
@@ -939,10 +988,10 @@ function CreateLuaParser(text) {
         return curNode
     }
 
-    expr = () => subexpr(0)
+    expr = (locals) => subexpr(0, locals)
 
-    function exprstat() {
-        let ex = primaryexpr()
+    function exprstat(locals) {
+        let ex = primaryexpr(locals)
 
         if (ex.Type == "MethodExpr" || ex.Type == "CallExpr") {
 
@@ -959,18 +1008,18 @@ function CreateLuaParser(text) {
             let lhsSeperator = []
             while (peek().Source == ",") {
                 lhsSeperator.push(get())
-                let lhsPart = primaryexpr()
+                let lhsPart = primaryexpr(locals)
                 if (lhsPart.Type == "MethodExpr" || lhsPart.Type == "CallExpr") {
                     throw "Bad left hand side of asignment"
                 }
                 lhs.push(lhsPart)
             }
             let eq = expect("Symbol", "=")
-            let rhs = [expr()]
+            let rhs = [expr(locals)]
             let rhsSeperator = []
             while (peek().Source == ",") {
                 rhsSeperator.push(get())
-                rhs.push(expr())
+                rhs.push(expr(locals))
             }
 
             let node
@@ -988,21 +1037,21 @@ function CreateLuaParser(text) {
         }
     }
 
-    function ifstat() {
+    function ifstat(locals) {
         let ifKw = get()
-        let condition = expr()
+        let condition = expr(locals)
         let thenKw = expect("Keyword", "then")
-        let ifBody = block()
+        let ifBody = block(locals)
         let elseClauses = []
         while (peek().Source == "elseif" || peek().Source == "else") {
             let elseifKw = get()
             let elseifCondition
             let elseifThenKw
             if (elseifKw.Source == "elseif") {
-                elseifCondition = expr()
+                elseifCondition = expr(locals)
                 elseifThenKw = expect("Keyword", "then")
             }
-            let elseifBody = block()
+            let elseifBody = block(locals)
             elseClauses.push({
                 "Condition": elseifCondition,
                 "Body": elseifBody,
@@ -1033,9 +1082,9 @@ function CreateLuaParser(text) {
     }
 
 
-    function dostat() {
+    function dostat(locals) {
         let doKw = get()
-        let [body, enKw] = blockbody("end")
+        let [body, enKw] = blockbody("end", locals)
         
         let node
         node = MkNode({
@@ -1050,11 +1099,11 @@ function CreateLuaParser(text) {
         return node
     }
 
-    function whilestat() {
+    function whilestat(locals) {
         let whileKw = get()
-        let condition = expr()
+        let condition = expr(locals)
         let doKw = expect("Keyword", "do")
-        let [body, enKw] = blockbody("end")
+        let [body, enKw] = blockbody("end", locals)
 
         let node
         node = MkNode({
@@ -1071,18 +1120,18 @@ function CreateLuaParser(text) {
         return node
     }
 
-    function forstat() {
+    function forstat(locals) {
         let forKw = get()
         let [loopVars, loopVarCommas] = varlist()
         let node = []
         if (peek().Source == "=") {
             let eqTk = get()
-            let [exprList, exprCommaList] = exprlist()
+            let [exprList, exprCommaList] = exprlist(locals)
             if (exprList.length < 2 || exprList.length > 3) {
                 throw "Expected 2 or 3 values for range bounds"
             }
             let doTk = expect("Keyword", "do")
-            let [body, enTk] = blockbody("end")
+            let [body, enTk] = blockbody("end", locals)
             let node
             node = MkNode({
                 "Type": "NumericForStat",
@@ -1102,9 +1151,9 @@ function CreateLuaParser(text) {
             return node
         } else if(peek().Source == "in") {
             let inTk = get()
-            let [exprList, exprCommaList] = exprlist()
+            let [exprList, exprCommaList] = exprlist(locals)
             let doTk = expect("Keyword", "do")
-            let [body, enTk] = blockbody("end")
+            let [body, enTk] = blockbody("end", locals)
             let node
             node = MkNode({
                 "Type": "GenericForStat",
@@ -1125,10 +1174,10 @@ function CreateLuaParser(text) {
         }
     }
 
-    function repeatstat() {
+    function repeatstat(locals) {
         let repeatKw = get()
-        let [body, untilTk] = blockbody("until")
-        let condition = expr()
+        let [body, untilTk] = blockbody("until", locals)
+        let condition = expr(locals)
 
         let node
         node = MkNode({
@@ -1144,10 +1193,10 @@ function CreateLuaParser(text) {
         return node
     }
 
-    function localdecl() {
+    function localdecl(locals) {
         let localKw = get()
         if (peek().Source == "function") {
-            let funcStat = funcdecl(false)
+            let funcStat = funcdecl(false, locals)
             if (funcStat.NameChain.length > 1) {
                 throw getTokenStartPosition(funcStat.Token_NameChainSeperator[0]) + ": `(` expected."
             }
@@ -1168,10 +1217,11 @@ function CreateLuaParser(text) {
             let eqToken
             if (peek().Source == "=") {
                 eqToken = get()
-                let [exprList1, exprCommaList1] = exprlist()
+                let [exprList1, exprCommaList1] = exprlist(locals)
                 exprList = exprList1
                 exprCommaList = exprCommaList1
             }
+            
 
             let node
             node = MkNode({
@@ -1197,7 +1247,7 @@ function CreateLuaParser(text) {
         }
     }
 
-    function retstat() {
+    function retstat(locals) {
         let returnKw = get()
         let exprList
         let commaList
@@ -1205,7 +1255,7 @@ function CreateLuaParser(text) {
             exprList = []
             commaList = []
         } else {
-            [exprList, commaList] = exprlist()
+            [exprList, commaList] = exprlist(locals)
         }
         let self
         self = {
@@ -1237,35 +1287,37 @@ function CreateLuaParser(text) {
         return self
     }
 
-    function statement() {
+    function statement(locals) {
         let tok = peek()
         if (tok.Source == "if") {
-            return [false, ifstat()]
+            return [false, ifstat(locals)]
         } else if(tok.Source == "while") {
-            return [false, whilestat()]
+            return [false, whilestat(locals)]
         } else if(tok.Source == "do") {
-            return [false, dostat()]
+            return [false, dostat(locals)]
         } else if(tok.Source == "for") {
-            return [false, forstat()]
+            return [false, forstat(locals)]
         } else if(tok.Source == "repeat") {
-            return [false, repeatstat()]
+            return [false, repeatstat(locals)]
         } else if(tok.Source == "function") {
-            return [false, funcdecl(false)]
+            return [false, funcdecl(false, locals)]
         } else if(tok.Source == "local") {
-            return [false, localdecl()]
+            return [false, localdecl(locals)]
         } else if(tok.Source == "return") {
-            return [true, retstat()]
+            return [true, retstat(locals)]
         } else if(tok.Source == "break") {
-            return [true, breakstat()]
+            return [true, breakstat(locals)]
         } else {
-            return [false, exprstat()]
+            return [false, exprstat(locals)]
         }
     }
 
-    block = function() {
+    block = function(a) {
         let statements = []
         let semicolons = []
         let isLast = false
+
+        let locals = a || []
 
         let thing
         while (!isLast && !isBlockFollow()) {
@@ -1274,8 +1326,46 @@ function CreateLuaParser(text) {
             }
             thing = peek()
 
-            let [isLast, stat] = statement()
-            if (stat) statements.push(stat);
+            let [isLast, stat] = statement(locals)
+            if (stat) {
+                statements.push(stat);
+
+
+                switch (stat.Type) {
+                    case "LocalVarStat":
+                        stat.VarList.forEach(token => {
+                            token.UseCount = 0
+                            locals[token.Source] = token
+                            token.Tokens = []
+                            token.UseCountIncrease = () => {
+                                token.UseCount++
+                                token.Tokens.forEach(t => {
+                                    t.UseCount = token.UseCount
+                                })
+                            }
+                        })
+                        break
+
+                    case "LocalFunctionStat":
+                        let nameChain = stat.FunctionStat.NameChain
+                        if (nameChain.length === 1) {
+                            let token = nameChain[0]
+                            token.UseCount = 0
+                            locals[token.Source] = token
+                            token.Tokens = []
+                            token.UseCountIncrease = () => {
+                                token.UseCount++
+                                token.Tokens.forEach(t => {
+                                    t.UseCount = token.UseCount
+                                })
+                            }
+                        }
+                        break
+
+                    default:
+                        break
+                }
+            }
 
             let next = peek()
             if (next.Type == "Symbol" && next.Source == ";") {
@@ -1430,6 +1520,14 @@ function VisitAst(ast, visitors) {
         if (stat.Type == "StatList") {
             stat.StatementList.forEach((ch, index) => {
                 if (ch != null) {
+                    if (ch === null || ch.Type === null) {
+                        return
+                    }
+    
+                    ch.Remove = () => {
+                        stat.StatementList[index] = null
+                    }
+
                     visitStat(ch)
                 }
             })
@@ -1608,7 +1706,7 @@ function AddVariableInfo(ast) {
                 renameFunc(newName)
             })
         }
-
+        
         _var.Reference = function() {
             _var.UseCount++
         }
@@ -1622,6 +1720,7 @@ function AddVariableInfo(ast) {
         assert(name, "Missing var name")
         let _var = getGlobalVar(name)
         _var.RenameList.push(setNameFunc)
+        _var.Reference()
         return _var
     }
 
@@ -1648,6 +1747,7 @@ function AddVariableInfo(ast) {
         let _var = getLocalVar(currentScope, name)
         if (_var) {
             _var.RenameList.push(setNameFunc)
+            _var.Reference()
         } else {
             _var = addGlobalReference(name, setNameFunc)
         }
@@ -1839,7 +1939,7 @@ function PrintAst(ast) {
     let printExpr
     let buffer = ''
     function printt(tk) {
-        if (tk.LeadingWhite == null || tk.Source == null) {
+        if (tk.LeadingWhite === null || tk.Source === null) {
             throw `Bad token: tk=${tk} | lwhite=${tk.LeadingWhite} | source=${tk.Source}`
         }
         buffer = `${buffer}${tk.LeadingWhite}${tk.Source}`
@@ -1945,6 +2045,14 @@ function PrintAst(ast) {
 
         if (stat.Type == "StatList") {
             stat.StatementList.forEach((ch, index) => {
+                if (ch === null || ch.Type === null) {
+                    return
+                }
+
+                ch.Remove = () => {
+                    stat.StatementList[index] = null
+                }
+
                 printStat(ch)
                 if (stat.SemicolonList[index]) {
                     printt(stat.SemicolonList[index])
@@ -2075,6 +2183,7 @@ function PrintAst(ast) {
         } else if(stat.Type == "DoStat") {
             printt(stat.Token_Do)
             printStat(stat.Body)
+            //stat.Token_End.LeadingWhite = " "
             printt(stat.Token_End)
         } else if(stat.Type == "IfStat") {
             printt(stat.Token_If)
@@ -2162,7 +2271,7 @@ function FormatAst(ast) {
     }
 
     function padToken(tk) {
-        if (!WhiteChars[leadingChar(tk)]) {
+        if (!WhiteChars.includes(leadingChar(tk))) {
             tk.LeadingWhite = ' ' + tk.LeadingWhite
         }
     }
@@ -2303,6 +2412,14 @@ function FormatAst(ast) {
     formatStat = function(stat) {
         if (stat.Type == "StatList") {
             stat.StatementList.forEach((stat, index) => {
+                if (stat === null || stat.Type === null) {
+                    return
+                }
+
+                stat.Remove = () => {
+                    stat.StatementList[index] = null
+                }
+
                 formatStat(stat)
                 applyIndent(stat.GetFirstToken())
             })
@@ -2503,7 +2620,8 @@ function StripAst(ast) {
     let stripStat
     let stripExpr
     function stript(token) {
-        token.LeadingWhite = ''
+        if (token != null)
+            token.LeadingWhite = '';
     }
 
     function joint(tokenA, tokenB) {
@@ -2513,7 +2631,7 @@ function StripAst(ast) {
         let lastCh = tokenA.Source.substr(-0,1)
         let firstCh = tokenB.Source.substr(0,1)
 
-        if ((lastCh == "-" && firstCh == "-") || (AllIdentChars[lastCh] != null && AllIdentChars[firstCh] != null)) {
+        if ((lastCh == "-" && firstCh == "-") || (AllIdentChars.includes(lastCh) && AllIdentChars.includes(firstCh))) {
             tokenB.LeadingWhite = ' '
         } else {
             tokenB.LeadingWhite = ""
@@ -2923,6 +3041,7 @@ function SolveMath(ast) { // This is some ugly code sorry for whoever is seeing 
             a[i] = null
         }
 
+        if (b == null) return;
         for (var [i,v] of Object.entries(b)) {
             a[i] = v
         }
@@ -3008,17 +3127,21 @@ function SolveMath(ast) { // This is some ugly code sorry for whoever is seeing 
 
             if (left == null || right == null) return;
 
-            if (operator == "+") return left + right;
-            if (operator == "-") return left - right;
-            if (operator == "*") return left * right;
-            if (operator == "/") return left / right;
-            if (operator == "^") return left ** right;
-            if (operator == "%") return left % right;
+            let val
+            if (operator == "+") val = left + right;
+            if (operator == "-") val = left - right;
+            if (operator == "*") val = left * right;
+            if (operator == "/") val = left / right;
+            if (operator == "^") val = left ** right;
+            if (operator == "%") val = left % right;
 
-            if (operator == ">") return left > right;
-            if (operator == "<") return left < right;
-            if (operator == ">=") return left >= right;
-            if (operator == "<=") return left <= right;
+            if (operator == ">") val = left > right;
+            if (operator == "<") val = left < right;
+            if (operator == ">=") val = left >= right;
+            if (operator == "<=") val = left <= right;
+
+            if (val == false || val == true || (isFinite(val) && val > -(10 ** 6) && val < 10 ** 6 ))
+                return val;
         }
     }
 
@@ -3058,28 +3181,32 @@ function SolveMath(ast) { // This is some ugly code sorry for whoever is seeing 
             // this became a mess really quick
             rhs.EntryList = extra
 
-            if (rhs.EntryList.length <= 0) {
-                return createtype("NumberLiteral", amount || 0)
-            } else if(amount <= 0) {
-                return rhs
+            if (operator == "#") {
+                if (rhs.EntryList.length <= 0) {
+                    return createtype("NumberLiteral", amount || 0)
+                } else if(amount <= 0) {
+                    return rhs
+                }
+    
+                let newex = createbinop("+", createtype("NumberLiteral", amount), rhs);
+                return newex
             }
-
-            let newex = createbinop("+", createtype("NumberLiteral", amount), rhs);
-            return newex
         }
 
         if (rhs.Type == "BooleanLiteral") right = rSrc == "true" ? true : false;
         if (rhs.Type == "NumberLiteral") {
             right = parseFloat(rSrc)
-            if (right == null) return;
+            if (right === null) return;
         }
         if (rhs.Type == "StringLiteral") right = rSrc.substr(1,rSrc.length - 2);
 
-        if (operator == "not" && rhs.Type != null) {
-            if (rhs.Type == "NilLiteral" || (rhs.Type == "BooleanLiteral" && right == false)) return true;
+        if (operator == "not" && rhs.Type !== null) {
+
+            if (rhs.Type == "NilLiteral" || (rhs.Type == "BooleanLiteral" && right === false)) return true;
 
             return false
         }
+
         if (right != null) {
             if (operator == "#") return (right.length);
             if (operator == "-") return -right;
@@ -3173,6 +3300,28 @@ function SolveMath(ast) { // This is some ugly code sorry for whoever is seeing 
                 || expr.Type == "VargLiteral")
         {
             // ...
+            let token = expr.Token
+            if (token != null) {
+                if (token.Type == "Number") {
+                    let int = parseFloat(token.Source)
+
+                    if (int !== null && isFinite(int))
+                        token.Source = int + "";
+                }
+
+                if (token.Type == "String") {
+                    token.Source = token.Source.replace(/\\\d+/gi, (got) => {
+                        let num = parseFloat(got.substr(1,got.length-1))
+                        if (num && isFinite(num) && ((num >= 97 && num <= 122) || (num >= 65 && num <= 90))) {
+                          return String.fromCharCode(num)
+                        }
+                        
+                        return got
+                    })
+                }
+            }
+
+
         } else if(expr.Type == "FieldExpr") {
             solveExpr(expr.Base)
         } else if(expr.Type == "IndexExpr") {
@@ -3191,7 +3340,13 @@ function SolveMath(ast) { // This is some ugly code sorry for whoever is seeing 
             solveStat(expr.Body)
         } else if(expr.Type == "VariableExpr") {
             // Dont care
+            if (expr.Token.Source == "L_2_func")
+            console.log("GAMERTIME!", expr)
         } else if(expr.Type == "ParenExpr") {
+            let exprExpr = expr.Expression
+            if (exprExpr != null && exprExpr.Type == "ParenExpr") {
+                expr.Expression = exprExpr.Expression
+            }
             solveExpr(expr.Expression)
         } else if(expr.Type == "TableLiteral") {
             expr.EntryList.forEach((entry, index) => {
@@ -3213,8 +3368,16 @@ function SolveMath(ast) { // This is some ugly code sorry for whoever is seeing 
     
     solveStat = function(stat) {
         if (stat.Type == "StatList") {
-            stat.StatementList.forEach((ch) => {
-                if (ch != null) solveStat(ch);
+            stat.StatementList.forEach((ch, index) => {
+                if (ch === null || ch.Type === null) {
+                    return
+                }
+
+                ch.Remove = () => {
+                    stat.StatementList[index] = null
+                }
+
+                solveStat(ch);
             })
         } else if(stat.Type == "BreakStat") {
             // no
@@ -3230,11 +3393,22 @@ function SolveMath(ast) { // This is some ugly code sorry for whoever is seeing 
             }
         } else if(stat.Type == "LocalFunctionStat") {
             solveStat(stat.FunctionStat.Body)
+
+            if (stat.FunctionStat.NameChain.length === 1) {
+                if (stat.FunctionStat.NameChain[0].UseCount === 0) {
+                    return stat.Remove()
+                }
+            }
+
         } else if(stat.Type == "FunctionStat") {
             solveStat(stat.Body)
         } else if(stat.Type == "RepeatStat") {
             solveStat(stat.Body)
             solveExpr(stat.Condition)
+
+            if (stat.Body.Type == "StatList" && stat.Body.StatementList.length === 0) {
+                return stat.Remove()
+            }
         } else if(stat.Type == "GenericForStat") {
             stat.GeneratorList.forEach((expr, index) => {
                 solveExpr(expr)
@@ -3245,11 +3419,60 @@ function SolveMath(ast) { // This is some ugly code sorry for whoever is seeing 
                 solveExpr(expr)
             })
             solveStat(stat.Body)
+
+            if (stat.Body.Type == "StatList" && stat.Body.StatementList.length === 0) {
+                return stat.Remove()
+            }
+            
+            let a = stat.RangeList[0]
+            let b = stat.RangeList[1]
+            let c = stat.RangeList[2]
+            if (a == null || b == null) {
+                return stat.Remove()
+            }
+
+            if (a.Type != "NumberLiteral" || b.Type != "NumberLiteral" || (c != null && c.Type != "NumberLiteral") ) {
+                return // Nope.
+            }
+
+            let start = parseFloat(a.Token.Source)
+            let end = parseFloat(b.Token.Source)
+            let step = (c != null && parseFloat(c.Token.Source)) || 1
+
+            let t1 = ((step > 0 && start <= end) || (step < 0 && start >= end))
+            let t2 = ((end - start) + step) / step
+
+            let willRun = t1 && t2 >= 0
+
+            if (!willRun) {
+                return stat.Remove()
+            }
         } else if(stat.Type == "WhileStat") {
             solveExpr(stat.Condition)
             solveStat(stat.Body)
+
+            let condition = stat.Condition
+            switch (condition.Type) {
+                case "ParenExpr": {
+                    condition = condition.Expression
+                }
+                case "BooleanLiteral": {
+                    if (condition == null || condition.Token == null || condition.Token.Source !== "false") {
+                        break
+                    }
+                }
+                case "NilLiteral":
+                    stat.Remove()
+                    break
+
+                default: break
+            }
         } else if(stat.Type == "DoStat") {
             solveStat(stat.Body)
+
+            if (stat.Body === null || (stat.Body.Type == "StatList" && stat.Body.StatementList.length == 0)) {
+                return stat.Remove()
+            }
         } else if(stat.Type == "IfStat") {
             solveExpr(stat.Condition)
             solveStat(stat.Body)
@@ -3277,6 +3500,900 @@ function SolveMath(ast) { // This is some ugly code sorry for whoever is seeing 
 
     solveStat(ast)
 }
+
+function genHexString(len) {
+    const hex = '0123456789ABCDEF';
+    let output = '';
+    for (let i = 0; i < len; ++i) {
+        output += hex.charAt(Math.floor(Math.random() * hex.length));
+    }
+    return output;
+}
+
+
+function Uglify(ast) {
+    let uglifyStat
+    let uglifyExpr
+    function stript(token) {
+        if (token != null)
+            token.LeadingWhite = '';
+    }
+
+
+    function removething(a) {
+        if (a == null || a.substr == null) return;
+
+        let start = a.substr(0,1)
+        let end = a.substr(-1,1)
+
+        let ret
+        if (start == `"` || start == `'`) ret = a.substr(1,a.length-2);
+        if (start == `[`) {
+            ret =  a.substr(2,a.length-4);
+            start = "[["
+            end = "]]"
+        }
+        if (ret == null) return '';
+
+        let newret = ''
+        let i
+        for (i=0;i<=ret.length;i++) {
+            let c = ret.substr(i,1)
+
+            if (c == `'` || c == `"`) {
+                newret += `\\${c}`
+            } else {
+                newret += c
+            }
+        }
+        return [newret, start, end]
+    }
+
+    function joint(tokenA, tokenB) {
+
+        stript(tokenB)
+        
+        let lastCh = tokenA.Source.substr(-0,1)
+        let firstCh = tokenB.Source.substr(0,1)
+
+        if ((lastCh == "-" && firstCh == "-") || (AllIdentChars.includes(lastCh) && AllIdentChars.includes(firstCh))) {
+            tokenB.LeadingWhite = ' '
+        } else {
+            tokenB.LeadingWhite = ""
+        }
+    }
+
+    function bodyjoint(open, body, close) {
+        uglifyStat(body)
+        stript(close)
+        let bodyFirst = body.GetFirstToken()
+        let bodyLast = body.GetLastToken()
+
+        if (bodyFirst != null) {
+            joint(open, bodyFirst)
+            joint(bodyLast, close)
+        } else {
+            joint(open, close)
+        }
+    }
+
+    function cnode(node) {
+        let getf = node.GetFirstToken
+        let getl = node.GetLastToken
+
+        let self = node
+        node.GetFirstToken = function() {
+            let t = getf(self)
+            assert(t, node)
+            return t
+        }
+
+        node.GetLastToken = function() {
+            let t = getl(self)
+            assert(t, node)
+            return t
+        }
+
+        return node
+    }
+
+    function ctoken(type, source) {
+        return {type: type, Source: source, LeadingWhite: " "}
+    }
+
+    function replace(a,b) {
+        if (typeof(a) != "object" || typeof(b) != "object") return;
+
+        for (var [i,v] of Object.entries(a)) {
+            a[i] = null
+        }
+
+        for (var [i,v] of Object.entries(b)) {
+            a[i] = v
+        }
+    }
+
+    function createtype(type, val, type2=null) {
+        let a
+        a = cnode({
+            "Type": type,
+            "Token": {
+                "Type": type2 == null ? "Number" : type2,
+                "LeadingWhite": "",
+                "Source": "" + val,
+            },
+            "GetFirstToken": () => a.Token,
+            "GetLastToken": () => a.Token,
+        })
+        return a
+    }
+
+    function createtype2(type, val) {
+        let a
+        a = {
+            "Type": type,
+            "LeadingWhite": " ",
+            "Source": "" + val,
+        }
+        return a
+    }
+
+    function createbinop(operator, lhs, rhs) {
+        let a
+        a = {
+            "Type": "BinopExpr",
+            "Token_Op": {"Type":"Symbol", "LeadingWhite":"", "Source": operator},
+            "Lhs": lhs,
+            "Rhs": rhs,
+            "GetFirstToken": () => a.Lhs.GetFirstToken(),
+            "GetLastToken": () => a.Rhs.GetLastToken(),
+        }
+        return a
+    }
+
+    function createunop(operator, rhs) {
+        let node
+        node =  cnode({
+            "Type": "UnopExpr",
+            "Token_Op": {"Type":"Symbol", "LeadingWhite":" ", "Source": operator},
+            "Rhs": rhs,
+            "GetFirstToken": () => node.Token_Op,
+            "GetLastToken": () => node.Rhs.GetLastToken(),
+        })
+        return node
+    }
+
+    function rannum() {
+        return Math.floor(Math.random() * 99999)
+    }
+
+    function createparenexpr(Expr) {
+        let node = cnode({
+            Type: "ParenExpr",
+            Expression: Expr,
+            Token_OpenParen: ctoken("Symbol", "("),
+            Token_CloseParen: ctoken("Symbol", ")"),
+            GetFirstToken: (self) => self.Token_OpenParen,
+            GetLastToken: (self) => self.Token_CloseParen
+        })
+    }
+
+    function randomShit(a, b) {
+
+        let num = Math.floor(Math.random() * 8)
+        if (num == 0) {
+            return `((${a || rannum()}) + (${b || rannum()}))`
+        } else if(num == 1) {
+            return `((${a || rannum()}) * (${b || rannum()}))`
+        } else if(num == 2) {
+            return `((${a || rannum()}) ^ (${b || rannum()}))`
+        } else if(num == 3) {
+            return `((${a || rannum()}) / (${b || rannum()}))`
+        } else if(num == 4) {
+            return `((${a || rannum()}) .. (${b || rannum()}))`
+        } else if(num == 5) {
+            return `((${a || rannum()}) and (${b || rannum()}))`
+        } else if(num == 6) {
+            return `((${a || rannum()}) and (${b || rannum()}))`
+        } else {
+            return `(not (${a || rannum()}) and (${b || rannum()}))`
+        }
+    }
+
+    function generateRandomShit(ignore) {
+        let num = ignore ? 1000 : Math.floor(Math.random() * 100)
+
+        let str // ${Math.floor(Math.random() * 999)}
+        if (num == 0) {
+            str = `${rannum()} and true or ${randomShit("(a)")} * (b)((false)(${randomShit()})("" + ".." .. ${randomShit()} .. "")(${randomShit()})) ^ ${randomShit()}`
+        } else if(num == 1 && !ignore) {
+            str = `(function(a,b,c)
+                return ${generateRandomShit(true)} 
+                    and a or a == nil or b * a + b, c end)() 
+                    or ${randomShit()} 
+                    or ${rannum()} * ${randomShit()}`
+        } else {
+            str = `${Math.floor(Math.random() * 999)}`
+        }
+
+        let a = `${str}${i != 6 ? " " : ""}`;
+
+        return a
+    }
+
+    function generaterandomargs() {
+        let args = []
+        let commalist = []
+
+        return [args, commalist]
+    }
+
+    function createStatList(stats, semicolonList) {
+        let statList = cnode({
+            Type: "StatList",
+            StatementList: stats || [],
+            SemicolonList: semicolonList || [],
+            GetFirstToken: function(self) {
+                if (self.StatementList.length == 0) {
+                    return
+                } else {
+                    return self.StatementList[0].GetFirstToken()
+                }
+            },
+            GetLastToken: function(self) {
+                if (self.StatementList.length == 0) {
+                    return
+                } else if(self.SemicolonList[self.StatementList.length - 1]) {
+                    return self.SemicolonList[self.StatementList.length - 1]
+                } else {
+                    return self.StatementList[self.StatementList.length - 1].GetLastToken()
+                }
+            },
+        })
+        return statList
+    }
+
+    function createLocalStat(VarNames, ExprList) {
+        let expr = cnode({
+            Type: "LocalVarStat",
+            VarList: VarNames,
+            ExprList: ExprList || [],
+            Token_Local: { type: "Keyword", LeadingWhite: " ", Source: "local"},
+            Token_Equals: {type: "Symbol", LeadingWhite: " ", Source: "="},
+            Token_VarCommaList: [],
+            Token_ExprCommaList: [],
+            GetFirstToken: (self) => self.Token_Local,
+            GetLastToken: (self) => {
+                if (self.ExprList.length > 0) {
+                    return self.ExprList[self.ExprList.length - 1].GetLastToken()
+                } else {
+                    return self.VarList[self.VarList.length - 1]
+                }
+            }
+        })
+    }
+
+
+    function turnNumberToFTable(value1) {
+        let list = []
+        let seperators = []
+
+        let maxtablelength = 5
+
+        let a = (value1+"").split(".");
+        let value = a[0]
+        let dec = a[1]
+
+        let leftover = value - Math.min(value, maxtablelength) // Set max table length to 100
+
+        if (parseFloat(dec) && isFinite(dec)) {
+            leftover += (dec / 10)
+        }
+    
+        let tableLol = ""
+        for (let i = 0; i<Math.min(value, maxtablelength); i++) {
+            if (i == 0) {
+                tableLol += generateRandomShit()
+            } else {
+                tableLol += ", " + generateRandomShit()
+            }
+        }
+
+        let scr = `
+            local a = {${tableLol}}
+            return #a
+        `
+        // Sorry, creating a new parser is poop and slow, but the easy way
+        let body = CreateLuaParser(scr)
+
+        let ranargs = [
+                {Type: "Ident", Source: "a", LeadingWhite: " "},
+                {Type: "Ident", Source: "b", LeadingWhite: " "}, 
+        ]
+        let rancommas = [
+            {Type: "Symbol", Source: ",", LeadingWhite: " "},
+        ]
+        for (let i = 0; i>2; i++) {
+            let ran = Math.random()
+            if (ran > 0.5) {
+                args.push({Type: "Ident", Source: `d${Math.floor(Math.random() * 50)}`, LeadingWhite: " "})
+                commas.push({Type: "Symbol", Source: ",", LeadingWhite: " "})
+            }
+        }
+
+        let base = cnode({
+            Type: "ParenExpr",
+            Expression: cnode({
+                Type: "FunctionLiteral",
+                NameChain: undefined,
+                ArgList: ranargs,
+                Body: body,
+    
+                Token_Function: {Type: "Keyword", Source: "function", LeadingWhite: " "},
+                Token_NameChainSeperator: undefined,
+                Token_OpenParen: {Type: "Symbol", Source: "(", LeadingWhite: " "},
+                Token_Varg: undefined,
+                Token_ArgCommaList: rancommas,
+                Token_CloseParen: {Type: "Symbol", Source: ")", LeadingWhite: " "},
+                Token_End: {Type: "Keyword", Source: "end", LeadingWhite: " "},
+                GetFirstToken: (self) => self.Token_Function,
+                GetLastToken: (self) => self.Token_End,
+            }),
+            Token_OpenParen: {Type: "Symbol", Source: "(", LeadingWhite: " "},
+            Token_CloseParen: {Type: "Symbol", Source: ")", LeadingWhite: " "},
+            GetFirstToken: (self) => self.Token_OpenParen,
+            GetLastToken: (self) => self.Token_CloseParen
+        })
+
+
+        let [args, commalist] = generaterandomargs()
+        let expr = cnode({
+            Type: "CallExpr",
+            Base: base,
+
+            FunctionArguments: cnode({
+                CallType: "ArgCall",
+                ArgList: args || [],
+                
+                Token_CommaList: commalist || [],
+                Token_OpenParen: {Type: "Symbol", LeadingWhite: " ", Source: "("},
+                Token_CloseParen: {Type: "Symbol", LeadingWhite: " ", Source: ")"},
+                GetFirstToken: (self) => self.Token_OpenParen,
+                GetLastToken: (self) => self.Token_CloseParen
+            }),
+            GetFirstToken: (self) => self.Base.GetFirstToken(),
+            GetLastToken: (self) => self.FunctionArguments.GetLastToken()
+        })
+
+        let binop = createbinop("+", expr, createtype("NumberLiteral", leftover))
+        return binop//createparenexpr(binop)
+    }
+
+
+    function turnNumberToFString(value) {
+        let list = []
+        let seperators = []
+
+        let maxstrlength = 100
+
+        let leftover = value - Math.min(value, maxtablelength) // Set max table length to 100
+        let strlol = genHexString(Math.min(value, maxtablelength))
+
+        let scr = `
+            local a = "${strlol}"
+            return #a + ${leftover}
+        `
+        let body = CreateLuaParser(scr)
+
+        let base = cnode({
+            Type: "ParenExpr",
+            Expression: cnode({
+                Type: "FunctionLiteral",
+                NameChain: undefined,
+                ArgList: [],
+                Body: body,
+    
+                Token_Function: {Type: "Keyword", Source: "function", LeadingWhite: " "},
+                Token_NameChainSeperator: undefined,
+                Token_OpenParen: {Type: "Symbol", Source: "(", LeadingWhite: " "},
+                Token_Varg: undefined,
+                Token_ArgCommaList: [],
+                Token_CloseParen: {Type: "Symbol", Source: ")", LeadingWhite: " "},
+                Token_End: {Type: "Keyword", Source: "end", LeadingWhite: " "},
+                GetFirstToken: (self) => self.Token_Function,
+                GetLastToken: (self) => self.Token_End,
+            }),
+            Token_OpenParen: {Type: "Symbol", Source: "(", LeadingWhite: " "},
+            Token_CloseParen: {Type: "Symbol", Source: ")", LeadingWhite: " "},
+            GetFirstToken: (self) => self.Token_OpenParen,
+            GetLastToken: (self) => self.Token_CloseParen
+        })
+
+
+        let [args, commalist] = generaterandomargs()
+        let expr = cnode({
+            Type: "CallExpr",
+            Base: base,
+
+            FunctionArguments: cnode({
+                CallType: "ArgCall",
+                ArgList: args || [],
+                
+                Token_CommaList: commalist || [],
+                Token_OpenParen: {Type: "Symbol", LeadingWhite: " ", Source: "("},
+                Token_CloseParen: {Type: "Symbol", LeadingWhite: " ", Source: ")"},
+                GetFirstToken: (self) => self.Token_OpenParen,
+                GetLastToken: (self) => self.Token_CloseParen
+            }),
+            GetFirstToken: (self) => self.Base.GetFirstToken(),
+            GetLastToken: (self) => self.FunctionArguments.GetLastToken()
+        })
+
+
+        return expr//createbinop("+", expr, createtype("NumberLiteral", leftover))
+    }
+
+
+    let addedLocal = false
+    uglifyExpr = function(expr, uglied) {
+        if (expr.Type == "BinopExpr") {
+
+            uglifyExpr(expr.Lhs, uglied)
+            stript(expr.Token_Op)
+            uglifyExpr(expr.Rhs, uglied)
+
+            joint(expr.Token_Op, expr.Rhs.GetFirstToken())
+            joint(expr.Lhs.GetLastToken(), expr.Token_Op)
+        } else if(expr.Type == "UnopExpr") {
+            stript(expr.Token_Op)
+            uglifyExpr(expr.Rhs, uglied)
+
+            joint(expr.Token_Op, expr.Rhs.GetFirstToken())
+        } else if(expr.Type == "NumberLiteral" || expr.Type == "StringLiteral"
+                || expr.Type == "NilLiteral" || expr.Type == "BooleanLiteral"
+                || expr.Type == "VargLiteral")
+        {
+            if (uglied) {
+                switch(expr.Type) {
+                    case ("NumberLiteral"):
+                    case ("NilLiteral"):
+                    case ("BooleanLiteral"):
+                        expr.Token.Source += " "
+                    case ("StringLiteral"):
+                    case ("VargLiteral"): {
+                        stript(expr.Token)
+                    }
+                    default: {
+                        break
+                    }
+                }
+                return
+            }
+            
+
+            switch(expr.Type) {
+                case ("NumberLiteral"): {
+                    let value = isFinite(`0${expr.Token.Source}`) && parseFloat(`0${expr.Token.Source}`)
+
+                    let howtofuckup = Math.floor(Math.random() * 25)
+                    if (value !== null && typeof(value) == "number" && isFinite(value)) {
+                        if (howtofuckup === 0) { // Slow as fuck
+                            // #String
+                            //let newexpr = turnNumberToFString(value)
+                            //replace(expr, newexpr)
+                            break// uglifyExpr(expr, true) // Just fucks me up
+                        } else if(howtofuckup == 1) {
+                            // Math shit
+                            
+                            /*let ran = Math.floor(Math.random() * 100)
+                            if (ran === 0) {
+
+                            } else if(ran == 1) {
+
+                            } else {
+                                let plus = parseFloat(expr.Token.Source) - Math.floor(Math.random() * 500)
+                                let newor = parseFloat(expr.Token.Source - plus)
+                                let newexpr = createbinop("+", createtype("NumberLiteral", newor), createtype("NumberLiteral", plus))
+                                replace(expr, createparenexpr(newexpr))
+                            }*/
+                            break
+                        } else if(howtofuckup == 2) { // This shit is slow as fucks
+                            // #Table
+                            let newexpr = turnNumberToFTable(value, expr.Token.Source)
+                            replace(expr, newexpr)
+                            break// uglifyExpr(expr, true) // Just fucks me up
+                        } else {
+                            // IDK
+                            stript(expr.Token);
+                            break
+                        }
+                    }
+
+                    break
+                }
+
+                case ("StringLiteral"): {
+
+                    let [str, start, end] = removething(expr.Token.Source)
+
+                    let howtofuckup = Math.floor(Math.random() * 5)
+                    if (howtofuckup == 0) {
+                        let b = ""
+                        let staph = false
+                        for (let i = 0; i < str.length; i++) {
+                            let char = str.charAt(i)
+
+                            if (char == "\\" || staph) {
+                                staph = true
+                                b += char
+                            } else {
+                                b += `\\${char.charCodeAt()}`
+                            }
+                        }
+                        expr.Token.Source = `'${b}'`
+                        break
+                    } else if(howtofuckup == 1) {
+                        let a = []
+                        let b = ""
+                        if (str.length > 100) {break}
+
+                        let staph = false // Idk, fuck \10120987602362362101+6
+
+                        for (let i = 0; i < str.length; i++) {
+                            let char = str.charAt(i)
+
+                            if (char == "\\") {
+                                staph = true
+                                b = str.substr(i, str.length-i)
+                                break
+                            }
+                            a.push(`${char.charCodeAt()}`);
+                        }
+                        let callexpr = CreateLuaParser(`_ = string.char(${a.concat()}) .. ${start}${b}${end}`).StatementList[0].Rhs[0]
+                        if (!addedLocal) {
+                            addedLocal = true
+                            let local = CreateLuaParser(`local string = string`).StatementList[0]
+                            ast.StatementList = [local].concat(ast.StatementList)
+                        }
+                        uglifyExpr(callexpr.Lhs)
+                        replace(expr, callexpr)
+                        break
+                    } else {
+                        break
+                    }
+                }
+
+                default: {
+                    break
+                }
+            }
+
+            switch(expr.Type) {
+                case ("NumberLiteral"):
+                case ("NilLiteral"):
+                case ("BooleanLiteral"):
+                    expr.Token.Source += " "
+                case ("StringLiteral"):
+                case ("VargLiteral"): {
+                    stript(expr.Token)
+                }
+                default: {
+                    break
+                }
+            }
+        } else if(expr.Type == "FieldExpr") {
+            uglifyExpr(expr.Base, uglied)
+            stript(expr.Token_Dot)
+            stript(expr.Field)
+        } else if(expr.Type == "IndexExpr") {
+            uglifyExpr(expr.Base, uglied)
+            stript(expr.Token_OpenBracket)
+            uglifyExpr(expr.Index, uglied)
+            stript(expr.Token_CloseBracket)
+        } else if(expr.Type == "MethodExpr" || expr.Type == "CallExpr") {
+            uglifyExpr(expr.Base, uglied)
+            if (expr.Type == "MethodExpr") {
+                stript(expr.Token_Colon)
+                stript(expr.Method)
+            }
+            if (expr.FunctionArguments.CallType == "StringCall") {
+                stript(expr.FunctionArguments.Token)
+            } else if(expr.FunctionArguments.CallType == "ArgCall") {
+                stript(expr.FunctionArguments.Token_OpenParen)
+                expr.FunctionArguments.ArgList.forEach((argExpr, index) => {
+                    uglifyExpr(argExpr, uglied)
+                    let sep = expr.FunctionArguments.Token_CommaList[index]
+                    if (sep != null) {
+                        stript(sep)
+                    }
+                })
+                stript(expr.FunctionArguments.Token_CloseParen)
+            } else if(expr.FunctionArguments.CallType == "TableCall") {
+                uglifyExpr(expr.FunctionArguments.TableExpr, uglied)
+            }
+        } else if(expr.Type == "FunctionLiteral") {
+            stript(expr.Token_Function)
+            stript(expr.Token_OpenParen)
+            expr.ArgList.forEach((arg, index) => {
+                stript(arg)
+                let comma = expr.Token_ArgCommaList[index]
+                if (comma != null) {
+                    stript(comma)
+                }
+            })
+            if (expr.Token_Varg != null) {
+                stript(expr.Token_Varg)
+            }
+            stript(expr.Token_CloseParen)
+            bodyjoint(expr.Token_CloseParen, expr.Body, expr.Token_End)
+        } else if(expr.Type == "VariableExpr") {
+            stript(expr.Token)
+        } else if(expr.Type == "ParenExpr") {
+            stript(expr.Token_OpenParen)
+            uglifyExpr(expr.Expression, uglied)
+            stript(expr.Token_CloseParen)
+        } else if(expr.Type == "TableLiteral") {
+            stript(expr.Token_OpenBrace)
+            expr.EntryList.forEach((entry, index) => {
+                if (entry.EntryType == "Field") {
+                    stript(entry.Field)
+                    stript(entry.Token_Equals)
+                    uglifyExpr(entry.Value, uglied)
+                } else if(entry.EntryType == "Index") {
+                    stript(entry.Token_OpenBracket)
+                    uglifyExpr(entry.Index, uglied)
+                    stript(entry.Token_CloseBracket)
+                    stript(entry.Token_Equals)
+                    uglifyExpr(entry.Value, uglied)
+                } else if(entry.EntryType == "Value") {
+                    uglifyExpr(entry.Value, uglied)
+                } else {
+                    assert(false, "unreachable")
+                }
+                let sep = expr.Token_SeperatorList[index]
+                if (sep != null) {
+                    stript(sep)
+                }
+            })
+            
+            expr.Token_SeperatorList[expr.EntryList.length-1] = null
+            stript(expr.Token_CloseBrace)
+        } else {
+            throw(`unreachable, type: ${expr.Type}:${expr}  ${console.trace()}`)
+        }
+    }
+    
+    uglifyStat = function(stat, uglied) {
+        if (stat.Type == "StatList") {
+            let i
+            for (i=0; i<=stat.StatementList.length;i++) {
+                let chStat = stat.StatementList[i]
+                if (chStat == null) continue;
+                
+                uglifyStat(chStat, uglied)
+                stript(chStat.GetFirstToken())
+
+                let lastChStat = stat.StatementList[i-1]
+                if (lastChStat != null) {
+
+                    if (stat.SemicolonList[i-1]
+                        && lastChStat.GetLastToken().Source != ")" || chStat.GetFirstToken().Source != ")") 
+                    {
+                        stat.SemicolonList[i-1] = null
+                    }
+
+                    if (!stat.SemicolonList[i-1]) {
+                        joint(lastChStat.GetLastToken(), chStat.GetFirstToken())
+                    }
+                }
+            }
+
+            stat.SemicolonList[stat.StatementList.length-1] = null
+            if (stat.StatementList.length > 0) {
+                stript(stat.StatementList[0].GetFirstToken())
+            }
+        } else if(stat.Type == "BreakStat") {
+            stript(stat.Token_Break)
+        } else if(stat.Type == "ReturnStat") {
+            stript(stat.Token_Return)
+            stat.ExprList.forEach((expr, index) => {
+                uglifyExpr(expr, uglied)
+                if (stat.Token_CommaList[index] != null) {
+                    stript(stat.Token_CommaList[index])
+                }
+            })
+            if (stat.ExprList.length > 0) {
+                joint(stat.Token_Return, stat.ExprList[0].GetFirstToken())
+            }
+        } else if(stat.Type == "LocalVarStat") {
+            stript(stat.Token_Local)
+            stat.VarList.forEach((_var, index) => {
+                if (index == 0) {
+                    joint(stat.Token_Local, _var)
+                } else {
+                    stript(_var)
+                }
+                let comma = stat.Token_VarCommaList[index]
+                if (comma != null) {
+                    stript(comma)
+                }
+            })
+            if (stat.Token_Equals != null) {
+                stript(stat.Token_Equals)
+                stat.ExprList.forEach((expr, index) => {
+                    uglifyExpr(expr, uglied)
+                    let comma = stat.Token_ExprCommaList[index]
+                    if (comma != null) {
+                        stript(comma)
+                    }
+                })
+            }
+        } else if(stat.Type == "LocalFunctionStat") {
+            stript(stat.Token_Local)
+            joint(stat.Token_Local, stat.FunctionStat.Token_Function)
+            joint(stat.FunctionStat.Token_Function, stat.FunctionStat.NameChain[0])
+            joint(stat.FunctionStat.NameChain[0], stat.FunctionStat.Token_OpenParen)
+
+            stat.FunctionStat.ArgList.forEach((arg, index) => {
+                stript(arg)
+                let comma = stat.FunctionStat.Token_ArgCommaList[index]
+                if (comma != null) {
+                    stript(comma)
+                }
+            })
+            if (stat.FunctionStat.Token_Varg) {
+                stript(stat.FunctionStat.Token_Varg)
+            }
+            stript(stat.FunctionStat.Token_CloseParen)
+            bodyjoint(stat.FunctionStat.Token_CloseParen, stat.FunctionStat.Body, stat.FunctionStat.Token_End)
+        } else if(stat.Type == "FunctionStat") {
+            stript(stat.Token_Function)
+            stat.NameChain.forEach((part, index) => {
+                if (index == 0) {
+                    joint(stat.Token_Function, part)
+                } else {
+                    stript(part)
+                }
+                let sep = stat.Token_NameChainSeperator[index]
+                if (sep != null) {
+                    stript(sep)
+                }
+            })
+            stript(stat.Token_OpenParen)
+            stat.ArgList.forEach((arg, index) => {
+                stript(arg)
+                let comma = stat.Token_ArgCommaList[index]
+                if (comma != null) {
+                    stript(comma)
+                }
+            })
+
+            if (stat.Token_Varg) {
+                stript(stat.Token_Varg)
+            }
+            stript(stat.Token_CloseParen)
+            bodyjoint(stat.Token_CloseParen, stat.Body, stat.Token_End)
+        } else if(stat.Type == "RepeatStat") {
+            stript(stat.Token_Repeat)
+            bodyjoint(stat.Token_Repeat, stat.Body, stat.Token_Until)
+            uglifyExpr(stat.Condition, uglied)
+            joint(stat.Token_Until, stat.Condition.GetFirstToken())
+        } else if(stat.Type == "GenericForStat") {
+            stript(stat.Token_For)
+            stat.VarList.forEach((_var, index) => {
+                if (index == 0) {
+                    joint(stat.Token_For, _var)
+                } else {
+                    stript(_var)
+                }
+                let sep = stat.Token_VarCommaList[index]
+                if (sep != null) {
+                    stript(sep)
+                }
+            })
+            joint(stat.VarList[stat.VarList.length-1], stat.Token_In)
+            stat.GeneratorList.forEach((expr, index) => {
+                uglifyExpr(expr, uglied)
+                if (index == 0) {
+                    joint(stat.Token_In, expr.GetFirstToken())
+                }
+                let sep = stat.Token_GeneratorCommaList[index]
+                if (sep != null) {
+                    stript(sep)
+                }
+            })
+            joint(stat.GeneratorList[stat.GeneratorList.length-1].GetLastToken(), stat.Token_Do)
+            bodyjoint(stat.Token_Do, stat.Body, stat.Token_End)
+        } else if(stat.Type == "NumericForStat") {
+            stript(stat.Token_For)
+            stat.VarList.forEach((_var, index) => {
+                if (index == 0) {
+                    joint(stat.Token_For, _var)
+                } else {
+                    stript(_var)
+                }
+                let sep = stat.Token_VarCommaList[index]
+                if (sep != null) {
+                    stript(sep)
+                }
+            })
+            joint(stat.VarList[stat.VarList.length-1], stat.Token_Equals)
+            stat.RangeList.forEach((expr, index) => {
+                uglifyExpr(expr, uglied)
+                if (index == 0) {
+                    joint(stat.Token_Equals, expr.GetFirstToken())
+                }
+                let sep = stat.Token_RangeCommaList[index]
+                if (sep != null) {
+                    stript(sep)
+                }
+            })
+            joint(stat.RangeList[stat.RangeList.length-1].GetLastToken(), stat.Token_Do)
+            bodyjoint(stat.Token_Do, stat.Body, stat.Token_End)
+        } else if(stat.Type == "WhileStat") {
+            stript(stat.Token_While)
+            uglifyExpr(stat.Condition, uglied)
+            stript(stat.Token_Do)
+            joint(stat.Token_While, stat.Condition.GetFirstToken())
+            joint(stat.Condition.GetLastToken(), stat.Token_Do)
+            bodyjoint(stat.Token_Do, stat.Body, stat.Token_End)
+        } else if(stat.Type == "DoStat") {
+            stript(stat.Token_Do)
+            stript(stat.Token_End)
+            bodyjoint(stat.Token_Do, stat.Body, stat.Token_End)
+        } else if(stat.Type == "IfStat") {
+            stript(stat.Token_If)
+            uglifyExpr(stat.Condition, uglied)
+            joint(stat.Token_If, stat.Condition.GetFirstToken())
+            joint(stat.Condition.GetLastToken(), stat.Token_Then)
+
+            let lastBodyOpen = stat.Token_Then
+            let lastBody = stat.Body
+
+            stat.ElseClauseList.forEach((clause, i) => {
+                bodyjoint(lastBodyOpen, lastBody, clause.Token)
+                lastBodyOpen = clause.Token
+
+                if (clause.Condition != null) {
+                    uglifyExpr(clause.Condition, uglied)
+                    joint(clause.Token, clause.Condition.GetFirstToken())
+                    joint(clause.Condition.GetLastToken(), clause.Token_Then)
+                    lastBodyOpen = clause.Token_Then
+                }
+
+                uglifyStat(clause.Body, uglied)
+                lastBody = clause.Body            
+            })
+
+            bodyjoint(lastBodyOpen, lastBody, stat.Token_End)
+        } else if(stat.Type == "CallExprStat") {
+            uglifyExpr(stat.Expression, uglied)
+        } else if(stat.Type == "AssignmentStat") {
+            stat.Lhs.forEach((ex, index) => {
+                uglifyExpr(ex, uglied)
+                let sep = stat.Token_LhsSeperatorList[index]
+                if (sep != null) {
+                    stript(sep)
+                }
+            })
+            stript(stat.Token_Equals)
+            stat.Rhs.forEach((ex, index) => {
+                uglifyExpr(ex, uglied)
+                let sep = stat.Token_RhsSeperatorList[index]
+                if (sep != null) {
+                    stript(sep)
+                }
+            })
+        } else {
+            return uglifyExpr(stat, uglied)
+            //print(`unreachable, type: ${stat.Type}`,stat)
+            //throw(`unreachable, type: ${stat.Type}:${stat}`)
+        }
+    }
+
+    uglifyStat(ast)
+}
+
 
 
 let idGen = 0
@@ -3315,7 +4432,7 @@ function genNextVarName() {
 
 function genVarName() {
     let varName = genNextVarName()
-    while (Keywords[varName]) {
+    while (Keywords.includes(varName)) {
         varName = genNextVarName()
     }
     return varName
@@ -3350,7 +4467,7 @@ function MinifyVariables(globalScope, rootScope) {
             let varName = ""
             varName = indexToVarName(nextFreeNameIndex)
             nextFreeNameIndex++
-            while (Keywords[varName] || externalGlobals[varName]) {
+            while (Keywords.includes(varName) || externalGlobals[varName]) {
                 varName = indexToVarName(nextFreeNameIndex)
                 nextFreeNameIndex++ 
             }
@@ -3364,7 +4481,7 @@ function MinifyVariables(globalScope, rootScope) {
             let varName = ''
             varName = indexToVarName(scope.FirstFreeName)
             scope.FirstFreeName++
-            while (Keywords[varName] || externalGlobals[varName]) {
+            while (Keywords.includes(varName) || externalGlobals[varName]) {
                 varName = indexToVarName(scope.FirstFreeName)
                 scope.FirstFreeName++
             }
@@ -3536,6 +4653,158 @@ function BeautifyVariables(globalScope, rootScope, renameGlobals) {
     modify(rootScope)
 }
 
+
+function UglifyVariables(globalScope, rootScope, renameGlobals) {
+    let globalUsedNames = []
+    for (var [kw, _] of Object.entries(Keywords)) {
+        globalUsedNames[kw] = true
+    }
+
+    let allVariables = []
+    let allLocalVariables = []
+    
+    
+    globalScope.forEach((_var) => {
+        if (_var.AssignedTo && renameGlobals) {
+            allVariables.push(_var)
+        } else {
+            globalUsedNames[_var.Name] = true
+        }
+    })
+
+    function addFrom(scope) {
+        scope.VariableList.forEach((_var) => {
+            allVariables.push(_var)
+            allLocalVariables.push(_var)
+        })
+        scope.ChildScopeList.forEach((childScope) => {
+            addFrom(childScope)
+        })
+    }
+    addFrom(rootScope)
+
+    allVariables.forEach((_var) => {
+        _var.UsedNameArray = []
+    })
+
+    allVariables.sort((a, b) => a - b)
+
+    let nextValidNameIndex = 0
+    let varNamesLazy = []
+
+    let uglyNames = []
+    function generateUglyName(i) {
+        if (uglyNames[i]) {
+            return uglyNames[i]
+        }
+        function OwOIfy(str) {
+
+            return str.split('').map(v=>{
+
+                let c = Math.round(Math.random())
+                if (c && v.toLowerCase() !== 'w') return v.toUpperCase();
+                return v;
+
+            }).join('')
+
+        }
+        const vars = ['uwu_my_holy_master', 'owosenpai', 'uwu','owo']
+
+
+        function gen() {
+            let a = ""
+            for (let i = 0; i<=20; i++) {
+                let num = Math.floor(Math.random() * vars.length)
+                a+= num !== 3? OwOIfy(vars[num]) : vars[num]
+            }
+            return a
+        }
+
+        let gamer = gen()
+        while (uglyNames.includes(gamer))
+            gamer = gen();
+
+        uglyNames.push(gamer)
+
+        return gamer
+    }
+
+    function varIndexToValidName(i) {
+        let name = varNamesLazy[i]
+        if (name == null) {
+            name = generateUglyName(nextValidNameIndex)
+            nextValidNameIndex++
+            while (globalUsedNames[name]) {
+                name = generateUglyName(nextValidNameIndex)
+                nextValidNameIndex++  
+            }
+            varNamesLazy[i] = name
+        }
+        return name
+    }
+
+    allVariables.forEach((_var, _) => {
+        _var.Renamed = true
+        
+        let i = 0
+        while (_var.UsedNameArray[i]) {
+            i++
+        }
+
+        _var.Rename(varIndexToValidName(i))
+
+        if (_var.Scope) {
+
+            allVariables.forEach((otherVar) => {
+                if (!otherVar.Renamed) {
+                    if (!otherVar.Scope || otherVar.Scope.Depth < _var.Scope.Depth) {
+                        otherVar.ReferenceLocationList.some((refAt) => {
+                            if (refAt >= _var.BeginLocation && refAt <= _var.ScopeEndLocation) {
+                                otherVar.UsedNameArray[i] = true
+                                return true
+                            }
+                            return false
+                        })
+                    } else if(otherVar.Scope.Depth > _var.Scope.Depth) {
+                        _var.ReferenceLocationList.some((refAt) => {
+                            if (refAt >= otherVar.BeginLocation && refAt <= otherVar.ScopeEndLocation) {
+                                otherVar.UsedNameArray[i] = true
+                                return true
+                            }
+                            return false
+                        })
+                    } else {
+                        if (_var.BeginLocation < otherVar.EndLocation && _var.EndLocation > otherVar.BeginLocation) {
+                           otherVar.UsedNameArray[i] = true
+                        }
+                    }
+                }
+            })
+        } else {
+            allVariables.forEach((otherVar) => {
+                if (!otherVar.Renamed) {
+                    if (otherVar.Type == "Global") {
+                        otherVar.UsedNameArray[i] = true
+                    } else if(otherVar.Type == "Local") {
+
+                        _var.ReferenceLocationList.some((refAt) => {
+                            if (refAt >= otherVar.BeginLocation && refAt <= otherVar.ScopeEndLocation) {
+                                otherVar.UsedNameArray[i] = true
+                                return true
+                            }
+
+                            return false
+                        })
+                    } else {
+                        throw "Unreachable"
+                    }
+                }
+            })
+        }
+    })
+}
+
+
 // hi
 
 let watermark = `--[[\n\tcode generated using luamin.js, Herrtt#3868\n--]]`
@@ -3543,49 +4812,98 @@ let watermark = `--[[\n\tcode generated using luamin.js, Herrtt#3868\n--]]`
 let luaminp = {}
 
 luaminp.Minify = function(scr, options) {
-    let renameVars = options.RenameVariables
-    let renameGlobals = options.RenameGlobals
-    let solveMath = options.SolveMath
 
     let ast = CreateLuaParser(scr)
     let [glb, root] = AddVariableInfo(ast)
 
-    if (renameVars == true) {
-        MinifyVariables_2(glb, root, renameGlobals)
+    if (options.RenameVariables == true) {
+        MinifyVariables_2(glb, root, options.RenameGlobals)
     }
 
-    if (solveMath == true) {
+    if (options.SolveMath == true) {
         SolveMath(ast) // oboy
     }
 
     StripAst(ast)
 
     let result = PrintAst(ast)
-    result = `${result}`
+    result = `${watermark}\n\n${result}`
 
     return result
 }
 
 luaminp.Beautify = function(scr, options) {
-    let renameVars = options.RenameVariables
-    let renameGlobals = options.RenameGlobals
-    let solveMath = options.SolveMath
-
     let ast = CreateLuaParser(scr)
     let [glb, root] = AddVariableInfo(ast)
 
-    if (renameVars == true) {
-        BeautifyVariables(glb, root, renameGlobals)
+    if (options.RenameVariables) {
+        BeautifyVariables(glb, root, options.RenameGlobals)
     }
 
-    if (solveMath == true) {
+    if (options.SolveMath == true) {
         SolveMath(ast) // oboy
     }
 
     FormatAst(ast)
 
     let result = PrintAst(ast)
-    result = `${result}`
+    result = `${watermark}\n\n${result}`
+
+    return result
+}
+
+luaminp.Uglify = function(src1, options) {
+    //console.log("Sorry, but this is incredibly slow for large scripts.")
+
+    let ast1 = CreateLuaParser(src1)
+    let [glb1] = AddVariableInfo(ast1)
+
+    let lol = []
+    let alreadyAdded = []
+
+    glb1.forEach((v) => {
+        if (alreadyAdded[v.Name]) {
+            /*v.RenameList.forEach((a, b) => {
+                alreadyAdded[v.Name].RenameList.push(a)
+                v.RenameList[b] = null
+            })*/
+            return
+        }
+        //console.log 
+        alreadyAdded[v.Name] = v
+        //console.log("Heey", v)
+
+        ast1.SemicolonList = [{type: "Symbol", Source: ";", LeadingWhite: ""}].concat(ast1.SemicolonList)
+        lol = [CreateLuaParser(`local ${v.Name} = ${v.Name}`).StatementList[0]].concat(lol)
+
+        //v.AssignedTo = true
+        /*v.RenameList.push((a) => {
+            localstat.VarList[0].Source = a
+        })*/
+    })
+    glb1 = null
+    alreadyAdded = null
+
+    shuffle(lol)
+    lol.forEach((v, i) => {
+        ast1.StatementList = [v].concat(ast1.StatementList)
+        lol[i] = null
+    })
+    lol = null
+
+    let src2 = PrintAst(ast1)
+    ast1 = null
+
+    let ast2 = CreateLuaParser(src2)
+    Uglify(ast2)
+    
+    StripAst(ast2)
+
+    let [glb2, root2] = AddVariableInfo(ast2)
+    UglifyVariables(glb2, root2, options.RenameGlobals) // This is so fucking slow omg
+
+    let result = PrintAst(ast2)
+    result = `${watermark}\n\n${result}`
 
     return result
 }
@@ -3594,6 +4912,7 @@ try {
     if (module != null && module.exports != null) {
         module.exports.Beautify = luaminp.Beautify
         module.exports.Minify = luaminp.Minify
+        module.exports.Uglify = luaminp.Uglify
     }
 } catch(err) {/*idontcareboutthis*/}
 

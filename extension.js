@@ -85,22 +85,23 @@ function activate(context) {
 			return
 		}
 		const settings = vscode.workspace.getConfiguration('borks-dumper')
-		vscode.window.showQuickPick(["Beautify","Minify"],{canPickMany: false}).then(selection =>{
+		vscode.window.showQuickPick(["Beautify","Minify","Uglify"],{canPickMany: false}).then(selection =>{
 			if(selection === undefined) {return}
+			if(selection === "Uglify") {vscode.window.showWarningMessage("This is very slow on large scripts and will probably break.")}
 			vscode.window.showQuickPick([
 				{
 					label: 'Rename Variables',
-					detail: "Renames variables to names such as L_1_",
+					detail: "Should it change the variable names? (L_1_, L_2_, ...)",
 					picked: true
 				},
 				{
 					label: "Rename Globals",
-					detail: "Pretty sure this doesn't have any affect on the output",
+					detail: "Not safe, rename global variables? (G_1_, G_2_, ...) (only works if RenameVariables is set to true)",
 					picked: false
 				},
 				{
 					label:"Solve Math",
-					detail: "Solves attempts at lazy number obfuscation '84901248901+28383*12' is simplified to '84901589497'",
+					detail: "Solve math? (local a = 1 + 1 => local a = 2, etc.)",
 					picked: true
 				}
 			],{canPickMany: true, placeHolder: "You have to click on the setting with your mouse, enter will just submit"})

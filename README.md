@@ -29,13 +29,21 @@ dumps obfuscated scripts ok?
 - [x] Luraph
 - [ ] maybe other obfuscators that people use?
 
-- has a [minifier and beautifier](https://github.com/Herrtt/luamin.js/) from [herrtt](https://v3rmillion.net/member.php?action=profile&uid=599062)'s edit
+- has a [minifier and beautifier and uglifier](https://github.com/Herrtt/luamin.js/) from [herrtt](https://v3rmillion.net/member.php?action=profile&uid=599062)'s edit
 
 ## Requirements
 
 Node-fetch
 
 ## Release Notes
+
+### 0.1.1
+
+- updated luamin to herrtt's newer version (again again)
+
+ ### 0.1.0
+
+- updated luamin to herrtt's newer version (again)
 
 ### 0.0.9
 
