@@ -20,7 +20,7 @@ b::::::b                                                                k::::::k
  bbbbbbbbbbbbbbbb           ooooooooooo         rrrrrrr                 kkkkkkkk    kkkkkkk
 ```
 https://v3rmillion.net/member.php?action=profile&uid=492604
-
+[join the discord](https://discord.gg/xehA9ug)
 ## Features
 
 dumps obfuscated scripts ok?
@@ -36,6 +36,10 @@ dumps obfuscated scripts ok?
 Node-fetch
 
 ## Release Notes
+
+### 0.1.2
+
+- added discord
 
 ### 0.1.1
 
