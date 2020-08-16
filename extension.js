@@ -37,7 +37,7 @@ function activate(context) {
 			return
 		}
 		const settings = vscode.workspace.getConfiguration('borks-dumper')
-		vscode.window.showInformationMessage("Dumping started")
+		vscode.window.showInformationMessage("Dumping started, join https://discord.gg/xehA9ug")
 		fetch('http://borks.club:2095/dumper', {
 			method: "post",
 			headers: {"Content-Type":"application/json"},
@@ -54,26 +54,26 @@ function activate(context) {
 		})
 		.then(text => {
 			if (text.includes("No Obfuscator Detected")) {
-				vscode.window.showErrorMessage('Either something wrong with regex-ing or the obfuscator is unsupported (yet)')
+				vscode.window.showErrorMessage('Either something wrong with regex-ing or the obfuscator is unsupported (yet), join https://discord.gg/xehA9ug')
 				return
 			}
 
 			if (settings['OutputType'] == 'Create new file') {
 				vscode.workspace.openTextDocument({"content":`${text}`,"language":"lua"})
-				vscode.window.showInformationMessage("Dumped, new tab opened")
+				vscode.window.showInformationMessage("Dumped, new tab opened, join https://discord.gg/xehA9ug")
 
 			} else if (settings['OutputType'] == 'Replace current file') {
 				const fullRange = new vscode.Range(vscode.window.activeTextEditor.document.positionAt(0),vscode.window.activeTextEditor.document.positionAt(vscode.window.activeTextEditor.document.getText().length))
 				vscode.window.activeTextEditor.edit(editBuilder => {editBuilder.replace(fullRange, text)})
-				vscode.window.showInformationMessage("Dumped")
+				vscode.window.showInformationMessage("Dumped, join https://discord.gg/xehA9ug")
 
 			} else if (settings['OutputType'] == 'Copy to clipboard') {
 				vscode.env.clipboard.writeText(text)
-				vscode.window.showInformationMessage("Dumped, copied to clipboard")
+				vscode.window.showInformationMessage("Dumped, copied to clipboard, join https://discord.gg/xehA9ug")
 			}
 		})
 		.catch(function() {
-			vscode.window.showErrorMessage('Something went wrong, the vps probably went dead or maybe it just took too long')
+			vscode.window.showErrorMessage('Something went wrong, join https://discord.gg/xehA9ug')
 		})
 
 	})
